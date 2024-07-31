@@ -1,0 +1,42 @@
+// API Key for OpenWeatherMap
+const API_KEY = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
+
+// Select elements
+const weatherForm = document.querySelector('#weather-form');
+const cityInput = document.querySelector('#city');
+const weatherContainer = document.querySelector('#weather');
+
+// Function to fetch weather data
+async function getWeather(city) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`; // Metric for Celsius
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('City not found');
+        const data = await response.json();
+        displayWeather(data);
+    } catch (error) {
+        weatherContainer.innerHTML = `<p>Error: ${error.message}</p>`;
+    }
+}
+
+// Function to display weather data
+function displayWeather(data) {
+    const { main, weather, name } = data;
+    weatherContainer.innerHTML = `
+        <h3>Weather in ${name}</h3>
+        <p>Temperature: ${main.temp}°C</p>
+        <p>Humidity: ${main.humidity}%</p>
+        <p>Description: ${weather[0].description}</p>
+    `;
+}
+
+// Event listener for form submission
+weatherForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const city = cityInput.value.trim();
+    if (city) {
+        getWeather(city);
+    } else {
+        weatherContainer.innerHTML = '<p>Please enter a city name.</p>';
+    }
+});
